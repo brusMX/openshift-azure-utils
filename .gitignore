@@ -81,6 +81,7 @@ celerybeat-schedule
 
 # dotenv
 .env
+azureconfig.yaml
 
 # virtualenv
 .venv

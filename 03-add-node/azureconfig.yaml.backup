@@ -1,0 +1,4 @@
+tenant          :   <<AZURE_TENANT_ID: your Azure Active Directory tenant id or domain>>
+client_id       :   <<AZURE_CLIENT_ID: your Azure Active Directory Application Client ID>>
+client_secret   :   <<AZURE_CLIENT_SECRET: your Azure Active Directory Application Secret>>
+subscription_id :   <<AZURE_SUBSCRIPTION_ID: your Azure Subscription Id>>

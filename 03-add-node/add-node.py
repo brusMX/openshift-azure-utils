@@ -1,6 +1,6 @@
 """Deploy a VM
 
-Needed env vars:
+Please defina the following properties in  azureconfig.py file
 
 AZURE_TENANT_ID: your Azure Active Directory tenant id or domain
 AZURE_CLIENT_ID: your Azure Active Directory Application Client ID
@@ -9,6 +9,8 @@ AZURE_SUBSCRIPTION_ID: your Azure Subscription Id
 """
 import os
 import traceback
+import yaml
+
 
 from azure.common.credentials import ServicePrincipalCredentials
 from azure.mgmt.resource import ResourceManagementClient
@@ -60,11 +62,16 @@ VM_REFERENCE = {
 
 
 def get_credentials():
-    subscription_id = os.environ['AZURE_SUBSCRIPTION_ID']
+    azure_cfg = yaml.safe_load(open("azureconfig.yaml"))
+    for v in azure_cfg:
+        if not azure_cfg[v]:
+            raise ValueError('\nError: key '+v+' has no value in the azureconfig.yaml file')
+
+    subscription_id = azure_cfg['subscription_id']
     credentials = ServicePrincipalCredentials(
-        client_id=os.environ['AZURE_CLIENT_ID'],
-        secret=os.environ['AZURE_CLIENT_SECRET'],
-        tenant=os.environ['AZURE_TENANT_ID']
+        client_id=azure_cfg['client_id'],
+        secret=azure_cfg['client_secret'],
+        tenant=azure_cfg['tenant']
     )
     return credentials, subscription_id
 
@@ -100,8 +107,7 @@ def add_node():
         # Create Linux VM
         print('\nCreating Linux Virtual Machine')
         vm_parameters = create_vm_parameters(nic.id, VM_REFERENCE['linux'])
-        async_vm_creation = compute_client.virtual_machines.create_or_update(
-            GROUP_NAME, VM_NAME, vm_parameters)
+        async_vm_creation = compute_client.virtual_machines.create_or_update(GROUP_NAME, VM_NAME, vm_parameters)
         async_vm_creation.wait()
 
         # List VM in resource group
